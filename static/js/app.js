@@ -25,6 +25,8 @@ function init() {
         barChartBuild(sampleId[0])
 
         bubbleChartBuild(sampleId[0])
+
+        buildGauge(sampleId[0])
     });
 };
 init()
@@ -54,6 +56,8 @@ function optionChanged(id) {
     barChartBuild(id)
 
     bubbleChartBuild(id)
+
+    buildGauge(id)
 };
 
 function barChartBuild(id) {
@@ -105,8 +109,8 @@ function bubbleChartBuild(id) {
             text: otuLabels,
             mode:"markers",
             marker: {
-                color: [otuIds],
-                size: [sampleValues]
+                color: otuIds,
+                size: sampleValues
             }
         };
 
@@ -118,4 +122,53 @@ function bubbleChartBuild(id) {
         
         Plotly.newPlot("bubble", traceData2, layout)
     });
-}; 
+};
+
+function buildGauge(id) {
+    d3.json(url).then(function(data) {
+
+        let eachPerson=data.metadata;
+
+        let resultArray2 = eachPerson.filter(sampleObj => sampleObj.id == id);
+
+        let eachWashData= resultArray2[0];
+
+        let washFrequency= eachWashData.wfreq;
+
+        let trace3={
+            type: "indicator",
+            mode: "gauge+number",
+            value: washFrequency,
+            title: { text: "Wash Frequency (Scrubs per Week)", font: { size: 18 } },
+            gauge: {
+                axis: { range: [null, 9]},
+                bar: { color: "black" },
+                bgcolor: "white",
+                borderwidth: 2,
+                bordercolor: "gray",
+            steps: [
+                { range: [0, 1], color: "cyan" },
+                { range: [1, 2], color: "royalblue" },
+                {range: [2,3], color: "skyblue"},
+                {range: [3,4], color: "lightgreen"},
+                {range: [4,5], color: "limegreen"},
+                {range: [5,6], color: "green"},
+                {range: [6,7], color: "yellow"},
+                {range: [7,8], color: "orange"},
+                {range: [8,9], color: "red"}
+                ]
+            }
+        
+        };
+
+        let traceData3=[trace3];
+
+        let layout={
+            paper_bgcolor: "lavender"
+        };
+
+        Plotly.newPlot("gauge", traceData3, layout);
+
+        });
+};
+ 
